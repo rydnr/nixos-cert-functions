@@ -25,13 +25,13 @@
   outputs = { self, nixpkgs, ...}: {
     lib = rec {
       secret = { name, path }: "${path}/${name}.pem";
-      caCert = path: secret "ca" path;
+      caCert = path: secret { name = "ca"; inherit path };
       mkCert = {
         name, CN, hosts ? [], fields ? {}, action ? "", privateKeyOwner, path
       }: rec {
         inherit name caCert CN hosts fields action path;
-        cert = secret name path;
-        key = secret "${name}-key" path;
+        cert = secret { inherit name path; };
+        key = secret { name = "${name}-key"; inherit path; };
         privateKeyOptions = {
           owner = privateKeyOwner;
           group = "nogroup";
