@@ -25,7 +25,7 @@
   outputs = { self, nixpkgs, ...}: {
     lib = rec {
       secret = { name, path }: "${path}/${name}.pem";
-      caCert = path: secret { name = "ca"; inherit path };
+      caCert = path: secret { name = "ca"; inherit path; };
       mkCert = {
         name, CN, hosts ? [], fields ? {}, action ? "", privateKeyOwner, path
       }: rec {
