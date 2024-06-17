@@ -32,7 +32,8 @@
         defaultSystems ++ [ "armv6l-linux" ];
     in flake-utils.lib.eachSystem supportedSystems (system:
       {
-        functions = rec {
+        defaultPackage = packages.default;
+        packages = rec {
           secret = { name, path }: "${path}/${name}.pem";
           caCert = path: secret "ca" path;
           mkCert = {
