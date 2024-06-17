@@ -22,32 +22,23 @@
     flake-utils.url = "github:numtide/flake-utils/v1.0.0";
     nixos.url = "github:NixOS/nixpkgs/24.05";
   };
-  outputs = inputs:
-    with inputs;
-    let
-      defaultSystems = flake-utils.lib.defaultSystems;
-      supportedSystems = if builtins.elem "armv6l-linux" defaultSystems then
-        defaultSystems
-      else
-        defaultSystems ++ [ "armv6l-linux" ];
-    in flake-utils.lib.eachSystem supportedSystems (system:
-      rec {
-        lib = rec {
-          secret = { name, path }: "${path}/${name}.pem";
-          caCert = path: secret "ca" path;
-          mkCert = {
-            name, CN, hosts ? [], fields ? {}, action ? "", privateKeyOwner, path
-          }: rec {
-            inherit name caCert CN hosts fields action path;
-            cert = secret name path;
-            key = secret "${name}-key" path;
-            privateKeyOptions = {
-              owner = privateKeyOwner;
-              group = "nogroup";
-              mode = "0600";
-              path = key;
-            };
-          };
+  outputs = { self, nixpkgs, ...}: {
+    lib = rec {
+      secret = { name, path }: "${path}/${name}.pem";
+      caCert = path: secret "ca" path;
+      mkCert = {
+        name, CN, hosts ? [], fields ? {}, action ? "", privateKeyOwner, path
+      }: rec {
+        inherit name caCert CN hosts fields action path;
+        cert = secret name path;
+        key = secret "${name}-key" path;
+        privateKeyOptions = {
+          owner = privateKeyOwner;
+          group = "nogroup";
+          mode = "0600";
+          path = key;
         };
-      });
+      };
+    };
+  };
 }
